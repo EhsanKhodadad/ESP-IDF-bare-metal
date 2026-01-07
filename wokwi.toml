@@ -1,0 +1,8 @@
+[wokwi]
+version = 1
+firmware = 'build/single_door_wokwi.bin'
+elf = 'build/single_door_wokwi.elf'
+
+[[port.forward]]
+from = 3333
+to = 3333

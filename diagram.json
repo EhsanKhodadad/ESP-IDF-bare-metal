@@ -1,0 +1,118 @@
+{
+  "version": 1,
+  "author": "ESP Door Control",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-esp32-devkit-v1",
+      "id": "esp",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_cw",
+      "top": -76.8,
+      "left": 134.6,
+      "attrs": { "color": "red", "label": "Motor CW" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_ccw",
+      "top": -76.8,
+      "left": 163.4,
+      "attrs": { "color": "yellow", "label": "Motor CCW" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_stop",
+      "top": -76.8,
+      "left": 192.2,
+      "attrs": { "color": "limegreen", "label": "STOP" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_status",
+      "top": -76.8,
+      "left": 221,
+      "attrs": { "color": "blue", "label": "Status" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_open",
+      "top": 9.6,
+      "left": 249.6,
+      "attrs": { "color": "green", "label": "OPEN" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_close",
+      "top": 86.4,
+      "left": 249.6,
+      "attrs": { "color": "blue", "label": "CLOSE" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_stop",
+      "top": 163.2,
+      "left": 249.6,
+      "attrs": { "color": "red", "label": "STOP" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_cw",
+      "top": 28.8,
+      "left": 134.6,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_ccw",
+      "top": 28.8,
+      "left": 163.4,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_stop",
+      "top": 28.8,
+      "left": 192.2,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r_status",
+      "top": 28.8,
+      "left": 221,
+      "rotate": 90,
+      "attrs": { "value": "220" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX0", "$serialMonitor:TX", "", [] ],
+    [ "led_cw:A", "r_cw:1", "green", [ "v0" ] ],
+    [ "r_cw:2", "esp:26", "green", [ "h0" ] ],
+    [ "led_cw:C", "esp:GND.2", "black", [ "v0" ] ],
+    [ "led_ccw:A", "r_ccw:1", "yellow", [ "v0" ] ],
+    [ "r_ccw:2", "esp:27", "yellow", [ "h0" ] ],
+    [ "led_ccw:C", "esp:GND.2", "black", [ "v0" ] ],
+    [ "led_stop:A", "r_stop:1", "limegreen", [ "v0" ] ],
+    [ "r_stop:2", "esp:25", "limegreen", [ "h0" ] ],
+    [ "led_stop:C", "esp:GND.2", "black", [ "v0" ] ],
+    [ "led_status:A", "r_status:1", "blue", [ "v0" ] ],
+    [ "r_status:2", "esp:D2", "blue", [ "h0" ] ],
+    [ "led_status:C", "esp:GND.2", "black", [ "v0" ] ],
+    [ "btn_open:1.l", "esp:13", "green", [ "h0" ] ],
+    [ "btn_open:2.l", "esp:GND.1", "black", [ "h0" ] ],
+    [ "btn_close:1.l", "esp:12", "blue", [ "h0" ] ],
+    [ "btn_close:2.l", "esp:GND.1", "black", [ "h0" ] ],
+    [ "btn_stop:1.l", "esp:14", "red", [ "h0" ] ],
+    [ "btn_stop:2.l", "esp:GND.1", "black", [ "h0" ] ]
+  ],
+  "dependencies": {}
+}
