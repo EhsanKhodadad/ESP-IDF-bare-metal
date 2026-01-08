@@ -1,53 +1,52 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C5 | ESP32-C6 | ESP32-C61 | ESP32-H2 | ESP32-H21 | ESP32-H4 | ESP32-P4 | ESP32-S2 | ESP32-S3 | Linux |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | --------- | -------- | --------- | -------- | -------- | -------- | -------- | ----- |
+# Single Door Control - Wokwi Simulator
 
-# Hello World Example
+This version is optimized for the Wokwi ESP32 simulator with visual feedback using LEDs and push buttons.
 
-Starts a FreeRTOS task to print "Hello World".
+## Hardware Configuration
 
-(See the README.md file in the upper level 'examples' directory for more information about examples.)
+### Inputs (Push Buttons - Active Low)
+- **GPIO 13**: OPEN button (Green)
+- **GPIO 12**: CLOSE button (Blue)  
+- **GPIO 14**: STOP button (Red)
 
-## How to use example
+### Outputs (LEDs)
+- **GPIO 26**: Red LED - Motor Clockwise (Opening)
+- **GPIO 27**: Yellow LED - Motor Counter-clockwise (Closing)
+- **GPIO 25**: Green LED - Motor Stopped
+- **GPIO 2**: Blue LED - Status blink on state changes
 
-Follow detailed instructions provided specifically for this example.
+## How to Run in Wokwi
 
-Select the instructions depending on Espressif chip installed on your development board:
+### Wokwi Web (wokwi.com)
 
-- [ESP32 Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/stable/get-started/index.html)
-- [ESP32-S2 Getting Started Guide](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s2/get-started/index.html)
+1. Create a new ESP32 project at [wokwi.com](https://wokwi.com)
+2. Copy the contents of `single_door_wokwi.c` to the editor
+3. Copy the `diagram.json` to configure the hardware
+4. Click "Start Simulation"
 
+## Operation
 
-## Example folder contents
+1. **System starts** → Green LED on (Motor STOP), Door CLOSED
+2. **Press OPEN** → Red LED on, door opens for 5 seconds
+3. **Press CLOSE** → Yellow LED on, door closes for 5 seconds
+4. **Press STOP** → Green LED on, motor stops immediately
+5. **Blue LED** blinks briefly on every state transition
 
-The project **hello_world** contains one source file in C language [hello_world_main.c](main/hello_world_main.c). The file is located in folder [main](main).
+## Serial Monitor Output
 
-ESP-IDF projects are built using CMake. The project build configuration is contained in `CMakeLists.txt` files that provide set of directives and instructions describing the project's source files and targets (executable, library, or both).
-
-Below is short explanation of remaining files in the project folder.
-
+The system logs all state changes to the serial monitor:
 ```
-├── CMakeLists.txt
-├── pytest_hello_world.py      Python script used for automated testing
-├── main
-│   ├── CMakeLists.txt
-│   └── hello_world_main.c
-└── README.md                  This is the file you are currently reading
+[0 ms] Door State: CLOSED
+[1234 ms] Motor: FORWARD
+[1234 ms] Door State: OPENING
+[6234 ms] Motor: OFF
+[6234 ms] Door State: OPENED
 ```
 
-For more information on structure and contents of ESP-IDF projects, please refer to Section [Build System](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-guides/build-system.html) of the ESP-IDF Programming Guide.
+## Features
 
-## Troubleshooting
-
-* Program upload failure
-
-    * Hardware connection is not correct: run `idf.py -p PORT monitor`, and reboot your board to see if there are any output logs.
-    * The baud rate for downloading is too high: lower your baud rate in the `menuconfig` menu, and try again.
-
-## Technical support and feedback
-
-Please use the following feedback channels:
-
-* For technical queries, go to the [esp32.com](https://esp32.com/) forum
-* For a feature request or bug report, create a [GitHub issue](https://github.com/espressif/esp-idf/issues)
-
-We will get back to you as soon as possible.
+- **Debounced buttons** (50 ms) prevent switch bounce
+- **Command priority**: STOP > OPEN > CLOSE
+- **Visual feedback** with 4 LEDs showing real-time status
+- **ISR-driven timers** for accurate 5-second open/close cycles
+- **State machine** with 4 states: CLOSED, OPENING, OPENED, CLOSING
