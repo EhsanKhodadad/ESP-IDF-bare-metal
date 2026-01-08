@@ -13,12 +13,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
-#ifdef ARDUINO
-#include <Arduino.h>
-#else
 #include "sdkconfig.h"
 #include "esp_system.h"
-#endif
 #include "esp_timer.h"
 #include "driver/gpio.h"
 #include "freertos/FreeRTOS.h"
@@ -31,15 +27,15 @@
 
 #define TIMEOUT 5000  /* 5 seconds for open/close */
 
-/* GPIO pin assignments for ESP32 Wokwi simulation (use gpio_num_t for Arduino C++) */
-#define LED_MOTOR_CW    GPIO_NUM_26   /* Red LED - Motor Clockwise */
-#define LED_MOTOR_CCW   GPIO_NUM_27   /* Yellow LED - Motor Counter-clockwise */
-#define LED_MOTOR_STOP  GPIO_NUM_25   /* Green LED - Motor Stopped */
+/* GPIO pin assignments for ESP32-C3 (GPIO 0-21 available) */
+#define LED_MOTOR_CW    GPIO_NUM_8    /* Red LED - Motor Clockwise */
+#define LED_MOTOR_CCW   GPIO_NUM_9    /* Yellow LED - Motor Counter-clockwise */
+#define LED_MOTOR_STOP  GPIO_NUM_10   /* Green LED - Motor Stopped */
 #define LED_BUILTIN     GPIO_NUM_2    /* Built-in LED for status blink */
 
-#define BTN_OPEN        GPIO_NUM_13   /* Push button - OPEN command */
-#define BTN_CLOSE       GPIO_NUM_12   /* Push button - CLOSE command */
-#define BTN_STOP        GPIO_NUM_14   /* Push button - STOP command */
+#define BTN_OPEN        GPIO_NUM_3    /* Push button - OPEN command */
+#define BTN_CLOSE       GPIO_NUM_4    /* Push button - CLOSE command */
+#define BTN_STOP        GPIO_NUM_5    /* Push button - STOP command */
 
 #define DEBOUNCE_US     50000  /* 50 ms debounce */
 
@@ -326,10 +322,6 @@ static void door_state_machine(void)
     apply_motor_outputs();
 }
 
-/**
- * Main application entry point
- */
-#ifndef ARDUINO
 void app_main(void)
 {
     printf("\n=== Single Door Control System - Wokwi Simulator ===\n");
@@ -347,37 +339,9 @@ void app_main(void)
 
     printf("System initialized. Press buttons to control the door.\n\n");
 
-    while (1) {
+    while (true) {
         door_state_machine();
         read_buttons();
-        vTaskDelay(pdMS_TO_TICKS(1)); /* 1ms task delay */
+        vTaskDelay(1 / portTICK_PERIOD_MS); /* 1ms task delay */
     }
 }
-#else
-/* Arduino/Wokwi web wrapper */
-void setup()
-{
-    Serial.begin(115200);
-    while (!Serial) { vTaskDelay(pdMS_TO_TICKS(10)); }
-
-    gpio_init_io();
-    timer_init();
-
-    Serial.println();
-    Serial.println("=== Single Door Control System - Wokwi Simulator ===");
-    Serial.printf("  OPEN  button: GPIO %d\n", (int)BTN_OPEN);
-    Serial.printf("  CLOSE button: GPIO %d\n", (int)BTN_CLOSE);
-    Serial.printf("  STOP  button: GPIO %d\n", (int)BTN_STOP);
-    Serial.printf("  LED CW : GPIO %d\n", (int)LED_MOTOR_CW);
-    Serial.printf("  LED CCW: GPIO %d\n", (int)LED_MOTOR_CCW);
-    Serial.printf("  LED STOP: GPIO %d\n", (int)LED_MOTOR_STOP);
-    Serial.printf("  LED STAT: GPIO %d\n\n", (int)LED_BUILTIN);
-}
-
-void loop()
-{
-    door_state_machine();
-    read_buttons();
-    vTaskDelay(pdMS_TO_TICKS(1));
-}
-#endif

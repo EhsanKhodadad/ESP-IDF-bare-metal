@@ -17,22 +17,7 @@ This version is optimized for the Wokwi ESP32 simulator with visual feedback usi
 
 ## How to Run in Wokwi
 
-### Option 1: Wokwi VS Code Extension
-
-1. Install the [Wokwi for VS Code](https://marketplace.visualstudio.com/items?itemName=wokwi.wokwi-vscode) extension
-2. Update `main/CMakeLists.txt` to use `single_door_wokwi.c`:
-   ```cmake
-   idf_component_register(SRCS "single_door_wokwi.c"
-                          PRIV_REQUIRES spi_flash esp_timer driver
-                          INCLUDE_DIRS "")
-   ```
-3. Build the project:
-   ```powershell
-   idf.py build
-   ```
-4. Press **F1** → **Wokwi: Start Simulator**
-
-### Option 2: Wokwi Web (wokwi.com)
+### Wokwi Web (wokwi.com)
 
 1. Create a new ESP32 project at [wokwi.com](https://wokwi.com)
 2. Copy the contents of `single_door_wokwi.c` to the editor
