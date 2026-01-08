@@ -13,8 +13,12 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
+#ifdef ARDUINO
+#include <Arduino.h>
+#else
 #include "sdkconfig.h"
 #include "esp_system.h"
+#endif
 #include "esp_timer.h"
 #include "driver/gpio.h"
 #include "freertos/FreeRTOS.h"
@@ -27,15 +31,15 @@
 
 #define TIMEOUT 5000  /* 5 seconds for open/close */
 
-/* GPIO pin assignments for ESP32 Wokwi simulation */
-#define LED_MOTOR_CW    26   /* Red LED - Motor Clockwise */
-#define LED_MOTOR_CCW   27   /* Yellow LED - Motor Counter-clockwise */
-#define LED_MOTOR_STOP  25   /* Green LED - Motor Stopped */
-#define LED_BUILTIN     2    /* Built-in LED for status blink */
+/* GPIO pin assignments for ESP32 Wokwi simulation (use gpio_num_t for Arduino C++) */
+#define LED_MOTOR_CW    GPIO_NUM_26   /* Red LED - Motor Clockwise */
+#define LED_MOTOR_CCW   GPIO_NUM_27   /* Yellow LED - Motor Counter-clockwise */
+#define LED_MOTOR_STOP  GPIO_NUM_25   /* Green LED - Motor Stopped */
+#define LED_BUILTIN     GPIO_NUM_2    /* Built-in LED for status blink */
 
-#define BTN_OPEN        13   /* Push button - OPEN command */
-#define BTN_CLOSE       12   /* Push button - CLOSE command */
-#define BTN_STOP        14   /* Push button - STOP command */
+#define BTN_OPEN        GPIO_NUM_13   /* Push button - OPEN command */
+#define BTN_CLOSE       GPIO_NUM_12   /* Push button - CLOSE command */
+#define BTN_STOP        GPIO_NUM_14   /* Push button - STOP command */
 
 #define DEBOUNCE_US     50000  /* 50 ms debounce */
 
@@ -136,10 +140,10 @@ static void gpio_init_io(void)
     /* Motor LED output pins */
     io_conf.intr_type = GPIO_INTR_DISABLE;
     io_conf.mode = GPIO_MODE_OUTPUT;
-    io_conf.pin_bit_mask = (1ULL << LED_MOTOR_CW) |
-                           (1ULL << LED_MOTOR_CCW) |
-                           (1ULL << LED_MOTOR_STOP) |
-                           (1ULL << LED_BUILTIN);
+    io_conf.pin_bit_mask = (1ULL << (uint32_t)LED_MOTOR_CW) |
+                           (1ULL << (uint32_t)LED_MOTOR_CCW) |
+                           (1ULL << (uint32_t)LED_MOTOR_STOP) |
+                           (1ULL << (uint32_t)LED_BUILTIN);
     io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
     io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
     gpio_config(&io_conf);
@@ -153,9 +157,9 @@ static void gpio_init_io(void)
     /* Button input pins (active-low with pull-ups) */
     io_conf.intr_type = GPIO_INTR_DISABLE;
     io_conf.mode = GPIO_MODE_INPUT;
-    io_conf.pin_bit_mask = (1ULL << BTN_OPEN) |
-                           (1ULL << BTN_CLOSE) |
-                           (1ULL << BTN_STOP);
+    io_conf.pin_bit_mask = (1ULL << (uint32_t)BTN_OPEN) |
+                           (1ULL << (uint32_t)BTN_CLOSE) |
+                           (1ULL << (uint32_t)BTN_STOP);
     io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
     io_conf.pull_up_en = GPIO_PULLUP_ENABLE;
     gpio_config(&io_conf);
@@ -189,7 +193,7 @@ static void read_buttons(void)
 
     /* Per-button debounce state */
     typedef struct {
-        int gpio;
+        gpio_num_t gpio;
         bool last_raw;
         bool latched;      /* true while button is held to avoid repeats */
         uint64_t t_change; /* last time raw state changed */
@@ -325,6 +329,7 @@ static void door_state_machine(void)
 /**
  * Main application entry point
  */
+#ifndef ARDUINO
 void app_main(void)
 {
     printf("\n=== Single Door Control System - Wokwi Simulator ===\n");
@@ -348,3 +353,31 @@ void app_main(void)
         vTaskDelay(pdMS_TO_TICKS(1)); /* 1ms task delay */
     }
 }
+#else
+/* Arduino/Wokwi web wrapper */
+void setup()
+{
+    Serial.begin(115200);
+    while (!Serial) { vTaskDelay(pdMS_TO_TICKS(10)); }
+
+    gpio_init_io();
+    timer_init();
+
+    Serial.println();
+    Serial.println("=== Single Door Control System - Wokwi Simulator ===");
+    Serial.printf("  OPEN  button: GPIO %d\n", (int)BTN_OPEN);
+    Serial.printf("  CLOSE button: GPIO %d\n", (int)BTN_CLOSE);
+    Serial.printf("  STOP  button: GPIO %d\n", (int)BTN_STOP);
+    Serial.printf("  LED CW : GPIO %d\n", (int)LED_MOTOR_CW);
+    Serial.printf("  LED CCW: GPIO %d\n", (int)LED_MOTOR_CCW);
+    Serial.printf("  LED STOP: GPIO %d\n", (int)LED_MOTOR_STOP);
+    Serial.printf("  LED STAT: GPIO %d\n\n", (int)LED_BUILTIN);
+}
+
+void loop()
+{
+    door_state_machine();
+    read_buttons();
+    vTaskDelay(pdMS_TO_TICKS(1));
+}
+#endif
