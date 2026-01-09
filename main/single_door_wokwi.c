@@ -342,6 +342,5 @@ void app_main(void)
     while (true) {
         door_state_machine();
         read_buttons();
-        vTaskDelay(1 / portTICK_PERIOD_MS); /* 1ms task delay */
     }
 }
