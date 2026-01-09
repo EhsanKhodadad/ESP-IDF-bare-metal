@@ -4,11 +4,11 @@
   "editor": "wokwi",
   "parts": [
     {
-      "type": "wokwi-esp32-devkit-v1",
+      "type": "board-esp32-c3-devkitm-1",
       "id": "esp",
       "top": 0,
       "left": 0,
-      "attrs": {}
+      "attrs": { "builder": "esp-idf" }
     },
     {
       "type": "wokwi-led",
@@ -93,26 +93,26 @@
     }
   ],
   "connections": [
-    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
-    [ "esp:RX0", "$serialMonitor:TX", "", [] ],
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
     [ "led_cw:A", "r_cw:1", "green", [ "v0" ] ],
-    [ "r_cw:2", "esp:26", "green", [ "h0" ] ],
-    [ "led_cw:C", "esp:GND.2", "black", [ "v0" ] ],
+    [ "r_cw:2", "esp:8", "green", [ "h0" ] ],
+    [ "led_cw:C", "esp:GND", "black", [ "v0" ] ],
     [ "led_ccw:A", "r_ccw:1", "yellow", [ "v0" ] ],
-    [ "r_ccw:2", "esp:27", "yellow", [ "h0" ] ],
-    [ "led_ccw:C", "esp:GND.2", "black", [ "v0" ] ],
+    [ "r_ccw:2", "esp:9", "yellow", [ "h0" ] ],
+    [ "led_ccw:C", "esp:GND", "black", [ "v0" ] ],
     [ "led_stop:A", "r_stop:1", "limegreen", [ "v0" ] ],
-    [ "r_stop:2", "esp:25", "limegreen", [ "h0" ] ],
-    [ "led_stop:C", "esp:GND.2", "black", [ "v0" ] ],
+    [ "r_stop:2", "esp:10", "limegreen", [ "h0" ] ],
+    [ "led_stop:C", "esp:GND", "black", [ "v0" ] ],
     [ "led_status:A", "r_status:1", "blue", [ "v0" ] ],
-    [ "r_status:2", "esp:D2", "blue", [ "h0" ] ],
-    [ "led_status:C", "esp:GND.2", "black", [ "v0" ] ],
-    [ "btn_open:1.l", "esp:13", "green", [ "h0" ] ],
-    [ "btn_open:2.l", "esp:GND.1", "black", [ "h0" ] ],
-    [ "btn_close:1.l", "esp:12", "blue", [ "h0" ] ],
-    [ "btn_close:2.l", "esp:GND.1", "black", [ "h0" ] ],
-    [ "btn_stop:1.l", "esp:14", "red", [ "h0" ] ],
-    [ "btn_stop:2.l", "esp:GND.1", "black", [ "h0" ] ]
+    [ "r_status:2", "esp:2", "blue", [ "h0" ] ],
+    [ "led_status:C", "esp:GND", "black", [ "v0" ] ],
+    [ "btn_open:1.l", "esp:3", "green", [ "h0" ] ],
+    [ "btn_open:2.l", "esp:GND", "black", [ "h0" ] ],
+    [ "btn_close:1.l", "esp:4", "blue", [ "h0" ] ],
+    [ "btn_close:2.l", "esp:GND", "black", [ "h0" ] ],
+    [ "btn_stop:1.l", "esp:5", "red", [ "h0" ] ],
+    [ "btn_stop:2.l", "esp:GND", "black", [ "h0" ] ]
   ],
   "dependencies": {}
 }
